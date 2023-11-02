@@ -1,3 +1,9 @@
+/**
+ * SongManagerInterface class that provides the methods used in SongManager
+ *
+ * @author Bennett Fife
+ * @version 10/25/23
+ */
 public interface SongManagerInterface {
 // SongManager should have one constructor, an empty one (no parameters)
     /**

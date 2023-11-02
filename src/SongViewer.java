@@ -16,9 +16,17 @@ import java.util.Locale;
 
 public class SongViewer extends JFrame {
 
+    /**
+     * used for button iteration (starts on first song index 0)
+     */
     private int songIteration = 0;
-    private int songNumByYear;
-    public SongViewer(SongManager a){
+
+    /**
+     * Class used to put together all JFrame pieces and display SongManager data
+     *
+     * @param manager SongManager object that compiles all song data
+     */
+    public SongViewer(SongManager manager){
 
         //create the GUI frame that will hold frame elements
         Frame frame = new JFrame("Popular Songs of 2023");
@@ -96,8 +104,8 @@ public class SongViewer extends JFrame {
         frame.setLayout(null);
         //show the window on run
         frame.setVisible(true);
-        
-        
+
+
         //load button (enables Next/Prev buttons and adds combo box choices)
         loadData.addActionListener(new ActionListener() {
             @Override
@@ -105,7 +113,7 @@ public class SongViewer extends JFrame {
                 prevSong.setEnabled(true);
                 nextSong.setEnabled(true);
                 loadData.setEnabled(false);
-                ComboBoxModel<String> years = new DefaultComboBoxModel<>(a.getReleaseYears());
+                ComboBoxModel<String> years = new DefaultComboBoxModel<>(manager.getReleaseYears());
                 yearsComboBox.setModel(years);
             }
         });
@@ -117,14 +125,12 @@ public class SongViewer extends JFrame {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     //always reset to 0 when a new year is chosen
                     songIteration = 0;
-                    //always reset to 1 for first track in specific year (used for frame title)
-                    songNumByYear = 1;
                     //year selected from the combo box
                     String selectedYear = (String) yearsComboBox.getSelectedItem();
                     //grab the index of the current year selected
-                    int yearIndex = a.findStringIndex(a.getReleaseYears(), selectedYear);
+                    int yearIndex = manager.findStringIndex(manager.getReleaseYears(), selectedYear);
                     //grab an array of song objects from that specific index
-                    Song[] songsInCurrentYear = a.getSongs(yearIndex);
+                    Song[] songsInCurrentYear = manager.getSongs(yearIndex);
                     //set the text fields using the specified get methods
                     trackNameData.setText(songsInCurrentYear[songIteration].trackName());
                     artistData.setText(songsInCurrentYear[songIteration].artistName());
@@ -135,13 +141,13 @@ public class SongViewer extends JFrame {
                     releaseYearData.setCaretPosition(0);
                     streamsData.setCaretPosition(0);
                     //songNum of all songs
-                    double songNum = a.getSongNum(songsInCurrentYear[songIteration].trackName());
+                    double songNum = manager.getSongNum(songsInCurrentYear[songIteration].trackName());
                     //total number of songs in all years
-                    double totalSongs = a.getSongCount();
+                    double totalSongs = manager.getSongCount();
                     double songNumPercent = (songNum / totalSongs) * 100.0;
                     //set yearsData text label and the frame title
-                    yearsData.setText(String.format("%.2f", songNumPercent) + "% | " + (int) songNum + " of " + a.getSongCount() + " total songs.");
-                    frame.setTitle("Songs | " + songNumByYear + " of " + songsInCurrentYear.length + " songs");
+                    yearsData.setText(String.format("%.2f", songNumPercent) + "% | " + (int) songNum + " of " + manager.getSongCount() + " total songs.");
+                    frame.setTitle("Songs | " + (songIteration + 1) + " of " + songsInCurrentYear.length + " songs");
                 }
             }
         });
@@ -150,13 +156,12 @@ public class SongViewer extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedYear = (String) yearsComboBox.getSelectedItem();
-                int yearIndex = a.findStringIndex(a.getReleaseYears(), selectedYear);
-                Song[] songsInCurrentYear = a.getSongs(yearIndex);
+                int yearIndex = manager.findStringIndex(manager.getReleaseYears(), selectedYear);
+                Song[] songsInCurrentYear = manager.getSongs(yearIndex);
                 if (songIteration == 0){
                     JOptionPane.showMessageDialog(frame, "This is the first song for this year.");
                 } else {
                     songIteration--;
-                    songNumByYear--;
                     trackNameData.setText(songsInCurrentYear[songIteration].trackName());
                     artistData.setText(songsInCurrentYear[songIteration].artistName());
                     releaseYearData.setText(songsInCurrentYear[songIteration].releasedYear());
@@ -165,11 +170,11 @@ public class SongViewer extends JFrame {
                     artistData.setCaretPosition(0);
                     releaseYearData.setCaretPosition(0);
                     streamsData.setCaretPosition(0);
-                    double songNum = a.getSongNum(songsInCurrentYear[songIteration].trackName());
-                    double totalSongs = a.getSongCount();
+                    double songNum = manager.getSongNum(songsInCurrentYear[songIteration].trackName());
+                    double totalSongs = manager.getSongCount();
                     double songNumPercent = (songNum / totalSongs) * 100.0;
-                    yearsData.setText(String.format("%.2f", songNumPercent) + "% | " + (int) songNum + " of " + a.getSongCount() + " total songs");
-                    frame.setTitle("Songs | " + songNumByYear + " of " + songsInCurrentYear.length + " songs");
+                    yearsData.setText(String.format("%.2f", songNumPercent) + "% | " + (int) songNum + " of " + manager.getSongCount() + " total songs");
+                    frame.setTitle("Songs | " + (songIteration + 1) + " of " + songsInCurrentYear.length + " songs");
                 }
             }
         });
@@ -178,13 +183,12 @@ public class SongViewer extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedYear = (String) yearsComboBox.getSelectedItem();
-                int yearIndex = a.findStringIndex(a.getReleaseYears(), selectedYear);
-                Song[] songsInCurrentYear = a.getSongs(yearIndex);
+                int yearIndex = manager.findStringIndex(manager.getReleaseYears(), selectedYear);
+                Song[] songsInCurrentYear = manager.getSongs(yearIndex);
                 if (songIteration == songsInCurrentYear.length - 1){
                     JOptionPane.showMessageDialog(frame, "This is the last song for this year.");
                 } else {
                     songIteration++;
-                    songNumByYear++;
                     trackNameData.setText(songsInCurrentYear[songIteration].trackName());
                     artistData.setText(songsInCurrentYear[songIteration].artistName());
                     releaseYearData.setText(songsInCurrentYear[songIteration].releasedYear());
@@ -193,11 +197,11 @@ public class SongViewer extends JFrame {
                     artistData.setCaretPosition(0);
                     releaseYearData.setCaretPosition(0);
                     streamsData.setCaretPosition(0);
-                    int songNum = a.getSongNum(songsInCurrentYear[songIteration].trackName());
-                    double totalSongs = a.getSongCount();
+                    int songNum = manager.getSongNum(songsInCurrentYear[songIteration].trackName());
+                    double totalSongs = manager.getSongCount();
                     double songNumPercent = (songNum / totalSongs) * 100.0;
-                    yearsData.setText(String.format("%.2f", songNumPercent) + "% | " + songNum + " of " + a.getSongCount() + " total songs");
-                    frame.setTitle("Songs | " + songNumByYear + " of " + songsInCurrentYear.length + " songs");
+                    yearsData.setText(String.format("%.2f", songNumPercent) + "% | " + songNum + " of " + manager.getSongCount() + " total songs");
+                    frame.setTitle("Songs | " + (songIteration + 1) + " of " + songsInCurrentYear.length + " songs");
 
                 }
             }
